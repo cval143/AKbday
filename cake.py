@@ -37,7 +37,7 @@ if st.session_state.page == "intro":
 
 # # Stage 2: The Bakery
 elif st.session_state.page == "build":
-    st.title("Purble Place Studio 🧁")
+    st.title("Akshata's Cake Studio 🧁")
     
     # --- LIVE PREVIEW SECTION ---
     st.subheader("🎂 Your Creation")
