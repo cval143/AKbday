@@ -3,6 +3,25 @@ import streamlit as st
 # # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
+# Custom CSS to force images to overlap instead of stack vertically
+st.markdown("""
+    <style>
+    .cake-container {
+        position: relative;
+        height: 500px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .cake-layer {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        max-width: 500px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 if 'cake_layers' not in st.session_state:
     st.session_state.cake_layers = []
 if 'page' not in st.session_state:
@@ -20,12 +39,26 @@ if st.session_state.page == "intro":
 elif st.session_state.page == "build":
     st.title("Purble Place Studio 🧁")
     
+    # --- LIVE PREVIEW SECTION (Now at the Top so she sees it immediately) ---
+    st.subheader("🎂 Your Creation")
+    if not st.session_state.cake_layers:
+        st.info("Your cake stand is empty! Pick a base to start.")
+    else:
+        # THE OVERLAP MAGIC: We wrap images in a div with 'position: relative'
+        html_code = '<div class="cake-container">'
+        for layer in st.session_state.cake_layers:
+            # We build the HTML to stack the images
+            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+        html_code += '</div>'
+        st.markdown(html_code, unsafe_allow_html=True)
+    
+    st.write("---")
+
     st.write("### 🥣 Ingredients")
     tabs = st.tabs(["Sponges", "Frosting Drips", "Toppings"])
     
     with tabs[0]:
         st.write("Choose your bases:")
-        # Your specific uploaded filenames from the screenshot
         cols = st.columns(3)
         if cols[0].button("Vanilla"): st.session_state.cake_layers.append("vanilla_base.png")
         if cols[1].button("Chocolate"): st.session_state.cake_layers.append("chocolate_base.png")
@@ -35,7 +68,7 @@ elif st.session_state.page == "build":
         if cols[2].button("Karela 🥒"): st.session_state.cake_layers.append("karela_base.png")
         
     with tabs[1]:
-        st.write("All 5 drip options:")
+        st.write("Add some drips:")
         dcols = st.columns(3)
         if dcols[0].button("Vanilla Drip"): st.session_state.cake_layers.append("vanilla_drip.png")
         if dcols[1].button("Chocolate Drip"): st.session_state.cake_layers.append("chocolate_drip.png")
@@ -48,19 +81,6 @@ elif st.session_state.page == "build":
         if st.button("Sprinkles"): st.session_state.cake_layers.append("sprinkles.png")
         if st.button("Candles"): st.session_state.cake_layers.append("candles.png")
 
-    st.write("---")
-    
-    # --- LIVE PREVIEW SECTION ---
-    st.subheader("🎂 Your Cake (Live Preview)")
-    if not st.session_state.cake_layers:
-        st.info("Your cake stand is empty! Pick a base to start.")
-    else:
-        # This container makes sure the images stack in real-time
-        preview_container = st.container()
-        with preview_container:
-            for layer in st.session_state.cake_layers:
-                st.image(layer, use_container_width=True)
-    
     st.write("---")
     col1, col2 = st.columns(2)
     with col1:
@@ -76,6 +96,11 @@ elif st.session_state.page == "build":
 elif st.session_state.page == "final":
     st.balloons()
     st.header("IT'S GORGEOUS! 🎂✨")
+    # Show the final stacked result again
+    html_code = '<div class="cake-container">'
     for layer in st.session_state.cake_layers:
-        st.image(layer, use_container_width=True)
-    st.write("Now that the cake is ready, wait for the surprise...")
+        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+    html_code += '</div>'
+    st.markdown(html_code, unsafe_allow_html=True)
+    
+    st.write("Wait until you see what happens next...")
