@@ -3,7 +3,7 @@ import streamlit as st
 # # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
-# We add specific "nudge" controls for toppings
+# Custom CSS for overlapping layers
 st.markdown("""
     <style>
     .cake-container {
@@ -19,11 +19,6 @@ st.markdown("""
         top: 0;
         width: 100%;
         max-width: 500px;
-    }
-    /* This class allows us to move toppings specifically if they are off-center */
-    .topping-layer {
-        z-index: 10; /* Ensures toppings stay on the very top */
-        transform: translateY(20px); /* Adjust this number to move toppings UP or DOWN */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -52,18 +47,15 @@ elif st.session_state.page == "build":
     else:
         html_code = '<div class="cake-container">'
         for layer in st.session_state.cake_layers:
-            # We check if the layer is a topping to apply the extra alignment class
-            is_topping = any(t in layer for t in ["sprinkles", "chochips", "hearts", "smileys", "candles"])
-            extra_class = " topping-layer" if is_topping else ""
-            
-            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer{extra_class}">'
+            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
         html_code += '</div>'
         st.markdown(html_code, unsafe_allow_html=True)
     
     st.write("---")
 
     st.write("### 🥣 Ingredients")
-    tabs = st.tabs(["Sponges", "Frosting Drips", "Toppings"])
+    # Now only two tabs for a faster, cleaner experience
+    tabs = st.tabs(["Sponges", "Frosting Drips"])
     
     with tabs[0]:
         st.write("Choose your bases:")
@@ -83,15 +75,6 @@ elif st.session_state.page == "build":
         if dcols[2].button("Strawberry Drip"): st.session_state.cake_layers.append("strawberry_drip.png")
         if dcols[0].button("Blueberry Drip"): st.session_state.cake_layers.append("blueberry_drip.png")
         if dcols[1].button("Mango Drip"): st.session_state.cake_layers.append("mango_drip.png")
-
-    with tabs[2]:
-        st.write("Final touches:")
-        tcols = st.columns(2)
-        if tcols[0].button("Sprinkles"): st.session_state.cake_layers.append("sprinkles.png")
-        if tcols[1].button("Choco Chips"): st.session_state.cake_layers.append("chochips.png")
-        if tcols[0].button("Hearts ❤️"): st.session_state.cake_layers.append("hearts.png")
-        if tcols[1].button("Smileys 😊"): st.session_state.cake_layers.append("smileys.png")
-        if st.button("Candles 🕯️"): st.session_state.cake_layers.append("candles.png")
 
     st.write("---")
     
@@ -114,12 +97,31 @@ elif st.session_state.page == "build":
 elif st.session_state.page == "final":
     st.balloons()
     st.header("IT'S GORGEOUS! 🎂✨")
+    
+    # 1. Ask for her age
+    age = st.number_input("How many candles should we light? (Enter your age 🎂)", 
+                          min_value=0, max_value=100, value=0)
+
+    # 2. Display the cake with dynamic candles
     html_code = '<div class="cake-container">'
+    
+    # First, draw the cake layers she built
     for layer in st.session_state.cake_layers:
-        is_topping = any(t in layer for t in ["sprinkles", "chochips", "hearts", "smileys", "candles"])
-        extra_class = " topping-layer" if is_topping else ""
-        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer{extra_class}">'
+        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+    
+    # Second, add the number of candles she requested
+    # We use a loop to add the candle image multiple times
+    for _ in range(age):
+        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/candles.png" class="cake-layer">'
+        
     html_code += '</div>'
     st.markdown(html_code, unsafe_allow_html=True)
     
-    st.write("Wait until you see what happens next...")
+    st.write("---")
+    if age > 0:
+        st.subheader(f"Happy {age}th Birthday, Akshata! 🎉")
+    
+    if st.button("Bake another?"):
+        st.session_state.cake_layers = []
+        st.session_state.page = "intro"
+        st.rerun()
