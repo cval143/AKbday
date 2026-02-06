@@ -3,7 +3,7 @@ import streamlit as st
 # # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
-# Custom CSS to force images to overlap instead of stack vertically
+# We add specific "nudge" controls for toppings
 st.markdown("""
     <style>
     .cake-container {
@@ -12,12 +12,18 @@ st.markdown("""
         width: 100%;
         display: flex;
         justify-content: center;
+        overflow: hidden;
     }
     .cake-layer {
         position: absolute;
         top: 0;
         width: 100%;
         max-width: 500px;
+    }
+    /* This class allows us to move toppings specifically if they are off-center */
+    .topping-layer {
+        z-index: 10; /* Ensures toppings stay on the very top */
+        transform: translateY(20px); /* Adjust this number to move toppings UP or DOWN */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -46,7 +52,11 @@ elif st.session_state.page == "build":
     else:
         html_code = '<div class="cake-container">'
         for layer in st.session_state.cake_layers:
-            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+            # We check if the layer is a topping to apply the extra alignment class
+            is_topping = any(t in layer for t in ["sprinkles", "chochips", "hearts", "smileys", "candles"])
+            extra_class = " topping-layer" if is_topping else ""
+            
+            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer{extra_class}">'
         html_code += '</div>'
         st.markdown(html_code, unsafe_allow_html=True)
     
@@ -77,7 +87,6 @@ elif st.session_state.page == "build":
     with tabs[2]:
         st.write("Final touches:")
         tcols = st.columns(2)
-        # Updated to include names from your latest GitHub screenshot
         if tcols[0].button("Sprinkles"): st.session_state.cake_layers.append("sprinkles.png")
         if tcols[1].button("Choco Chips"): st.session_state.cake_layers.append("chochips.png")
         if tcols[0].button("Hearts ❤️"): st.session_state.cake_layers.append("hearts.png")
@@ -107,12 +116,10 @@ elif st.session_state.page == "final":
     st.header("IT'S GORGEOUS! 🎂✨")
     html_code = '<div class="cake-container">'
     for layer in st.session_state.cake_layers:
-        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+        is_topping = any(t in layer for t in ["sprinkles", "chochips", "hearts", "smileys", "candles"])
+        extra_class = " topping-layer" if is_topping else ""
+        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer{extra_class}">'
     html_code += '</div>'
     st.markdown(html_code, unsafe_allow_html=True)
     
     st.write("Wait until you see what happens next...")
-    if st.button("Bake another?"):
-        st.session_state.cake_layers = []
-        st.session_state.page = "intro"
-        st.rerun()
