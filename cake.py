@@ -76,17 +76,21 @@ elif st.session_state.page == "build":
 
     with tabs[2]:
         st.write("Final touches:")
-        if st.button("Sprinkles"): st.session_state.cake_layers.append("sprinkles.png")
-        if st.button("Candles"): st.session_state.cake_layers.append("candles.png")
+        tcols = st.columns(2)
+        # Updated to include names from your latest GitHub screenshot
+        if tcols[0].button("Sprinkles"): st.session_state.cake_layers.append("sprinkles.png")
+        if tcols[1].button("Choco Chips"): st.session_state.cake_layers.append("chochips.png")
+        if tcols[0].button("Hearts ❤️"): st.session_state.cake_layers.append("hearts.png")
+        if tcols[1].button("Smileys 😊"): st.session_state.cake_layers.append("smileys.png")
+        if st.button("Candles 🕯️"): st.session_state.cake_layers.append("candles.png")
 
     st.write("---")
     
-    # Updated navigation with Undo, Start Over, and Ready
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("⏪ Undo", use_container_width=True):
             if st.session_state.cake_layers:
-                st.session_state.cake_layers.pop() # Removes only the last added image
+                st.session_state.cake_layers.pop()
                 st.rerun()
     with col2:
         if st.button("🗑️ Start Over", use_container_width=True):
