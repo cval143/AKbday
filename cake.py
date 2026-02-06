@@ -119,11 +119,14 @@ elif st.session_state.page == "build":
             st.session_state.page = "final"
             st.rerun()
 
-# # Stage 3: Final Page
+# # Stage 3: The Wish & The Blow
 elif st.session_state.page == "final":
-    st.header("MAKE A WISH! 🎂✨")
+    st.title("Make a wish! 🎂✨")
     age = st.number_input("Enter your age:", min_value=1, max_value=100, step=1, value=1)
     
+    # Text input for the secret wish
+    wish = st.text_input("Type your birthday wish here (it stays a secret!):")
+
     html_code = '<div class="cake-container">'
     for layer in st.session_state.cake_layers:
         html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
@@ -139,15 +142,17 @@ elif st.session_state.page == "final":
     st.markdown(html_code, unsafe_allow_html=True)
 
     st.write("---")
+    
     if not st.session_state.blown:
-        if st.button("💨 BLOW OUT THE CANDLES", use_container_width=True):
+        st.subheader("Now blow the candles!")
+        if st.button("💨 BLOW!", use_container_width=True):
             st.session_state.blown = True
             st.rerun()
     else:
         st.balloons()
-        st.success(f"🎂 HAPPY {age}th BIRTHDAY, AKSHATA! 🎂")
-        if st.button("Bake another?"):
-            st.session_state.cake_layers = []
-            st.session_state.page = "intro"
-            st.session_state.blown = False
-            st.rerun()
+        st.success(f"🎂 HAPPY BIRTHDAY, AKSHATA! 🎂")
+        st.markdown("### Now let's move on to the gifts...")
+        if st.button("CONTINUE 🎁", type="primary", use_container_width=True):
+            # This is where you would link to your next page or a surprise gift reveal
+            st.write("Redirecting to gifts...") 
+            # st.session_state.page = "gifts" # (Unlock this if you want a gift stage!)
