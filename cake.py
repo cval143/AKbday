@@ -3,19 +3,21 @@ import streamlit as st
 # # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
-# High-speed CSS for overlapping layers
+# Custom CSS to force images to overlap instead of stack vertically
 st.markdown("""
     <style>
-    /* This forces each subsequent image to move UP and overlap the previous one */
-    [data-testid="stImage"] {
-        margin-top: -460px; /* Adjusted to match your image height */
+    .cake-container {
+        position: relative;
+        height: 500px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
-    /* The first image (the base) should stay at the bottom and not be pulled up */
-    [data-testid="stImage"]:first-of-type {
-        margin-top: 0px !important;
-    }
-    .stApp {
-        overflow-x: hidden;
+    .cake-layer {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        max-width: 500px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -42,9 +44,11 @@ elif st.session_state.page == "build":
     if not st.session_state.cake_layers:
         st.info("Your cake stand is empty! Pick a base to start.")
     else:
-        # Using native st.image with local paths is MUCH faster than HTML tags
+        html_code = '<div class="cake-container">'
         for layer in st.session_state.cake_layers:
-            st.image(layer, use_container_width=True)
+            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+        html_code += '</div>'
+        st.markdown(html_code, unsafe_allow_html=True)
     
     st.write("---")
 
@@ -77,11 +81,12 @@ elif st.session_state.page == "build":
 
     st.write("---")
     
+    # Updated navigation with Undo, Start Over, and Ready
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("⏪ Undo", use_container_width=True):
             if st.session_state.cake_layers:
-                st.session_state.cake_layers.pop()
+                st.session_state.cake_layers.pop() # Removes only the last added image
                 st.rerun()
     with col2:
         if st.button("🗑️ Start Over", use_container_width=True):
@@ -96,10 +101,11 @@ elif st.session_state.page == "build":
 elif st.session_state.page == "final":
     st.balloons()
     st.header("IT'S GORGEOUS! 🎂✨")
-    
-    # Final Reveal Stacking
+    html_code = '<div class="cake-container">'
     for layer in st.session_state.cake_layers:
-        st.image(layer, use_container_width=True)
+        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+    html_code += '</div>'
+    st.markdown(html_code, unsafe_allow_html=True)
     
     st.write("Wait until you see what happens next...")
     if st.button("Bake another?"):
