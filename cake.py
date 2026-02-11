@@ -47,7 +47,6 @@ st.markdown("""
         box-shadow: 0 0 8px #ff9800;
         animation: flicker 0.1s infinite alternate;
     }
-    /* Effect for blowing out */
     .blown-out {
         opacity: 0;
         transform: translateY(-10px) rotate(5deg);
@@ -62,10 +61,21 @@ st.markdown("""
         margin-top: -10px;
         margin-bottom: 10px;
     }
+    /* Style for the final gift link button */
+    .gift-button {
+        display: inline-block;
+        padding: 0.5em 1em;
+        color: white;
+        background-color: #ff4b4b;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# State initialization
 if 'cake_layers' not in st.session_state:
     st.session_state.cake_layers = []
 if 'page' not in st.session_state:
@@ -85,7 +95,6 @@ if st.session_state.page == "intro":
 elif st.session_state.page == "build":
     st.title("Akshata's Cake Studio 🧁")
     
-    # MOBILE FIX: Controls at the top so they don't disappear
     st.write("### 🥣 Ingredients")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -138,7 +147,6 @@ elif st.session_state.page == "final":
     st.title("Make a wish! 🎂✨")
     age = st.number_input("Enter your age:", min_value=1, max_value=100, step=1, value=1)
     
-    # Display Cake with Candles BEFORE the wish input as requested
     html_code = '<div class="cake-container">'
     for layer in st.session_state.cake_layers:
         html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
@@ -161,7 +169,7 @@ elif st.session_state.page == "final":
         st.subheader("Now blow the candles!")
         if st.button("Click to Blow the candles", use_container_width=True):
             st.session_state.blown = True
-            st.snow() # Enchanting effect
+            st.snow()
             time.sleep(1)
             st.rerun()
     else:
@@ -170,29 +178,19 @@ elif st.session_state.page == "final":
             st.session_state.page = "surprise"
             st.rerun()
 
-# # Stage 4: Surprise Message
+# # Stage 4: Surprise Gift Link
 elif st.session_state.page == "surprise":
     st.balloons()
     st.title("We have something for you... 💖")
     st.image("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzE1YmwycTVwazBocm5udDZidzdybGloN2VvMG9pYmlrcTl0cGhodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WRL7YgP42OKns22wRD/giphy.gif")
     
-    if st.button("The one where we surprise you", type="primary", use_container_width=True):
-        st.session_state.page = "video"
-        st.rerun()
-
-# # Stage 5: Final Video
-elif st.session_state.page == "video":
-    st.title("Happy Birthday Akshata! 🎬")
+    st.write("---")
+    # Using a specialized HTML link button for the Drive Video
+    drive_link = "https://drive.google.com/file/d/1YCfcnWZX3a-xk3YPrnvEFldXzXBcjc7p/view?usp=sharing"
+    st.markdown(f'<a href="{drive_link}" target="_blank" class="gift-button">The one where we surprise you 📽️</a>', unsafe_allow_html=True)
     
-    try:
-        video_file = open('akbday.mp4', 'rb')
-        video_bytes = video_file.read()
-        # Full controls and fullscreen are enabled by default in st.video
-        st.video(video_bytes)
-    except:
-        st.error("Make sure akbday.mp4 is uploaded to GitHub!")
-
-    if st.button("Start Over? 🔄"):
+    st.write("")
+    if st.button("Bake another cake? 🔄", use_container_width=True):
         st.session_state.cake_layers = []
         st.session_state.blown = False
         st.session_state.page = "intro"
