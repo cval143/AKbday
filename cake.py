@@ -2,11 +2,13 @@ import streamlit as st
 import random
 import time
 
-# # Stage 0: Setup
+# Stage 0: Setup
+# Fixed Line 9: Added standard quotes and ensured no invisible characters
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
 # RESPONSIVE CSS + New Satirical Styling
-st.markdown(""
+# Fixed Line 14: Used triple quotes (""") to properly wrap the multi-line CSS block
+st.markdown("""
     <style>
     .cake-container {
         position: relative;
@@ -73,3 +75,50 @@ st.markdown(""
         border: 2px solid #ff4b4b;
     }
     </style>
+""", unsafe_allow_html=True)
+
+if 'cake_layers' not in st.session_state:
+    st.session_state.cake_layers = []
+if 'page' not in st.session_state:
+    st.session_state.page = "intro"
+if 'blown' not in st.session_state:
+    st.session_state.blown = False
+
+# # Stage 1: Intro
+if st.session_state.page == "intro":
+    st.title("It's our bestie's birthday! 🎉")
+    st.image("https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGRmNXIyNmQ5TQzOHdheTk1M2w0aHRtZXdnemkzaDZyMjZqajZrdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/n3KZaXLYLuyNSHEvbm/giphy.gif")
+    if st.button("Let's Bake a Cake! 👩‍🍳", use_container_width=True):
+        st.session_state.page = "build"
+        st.rerun()
+
+# # Stage 2: The Bakery
+elif st.session_state.page == "build":
+    st.title("Akshata's Cake Studio 🧁")
+    
+    st.write("### 🥣 Ingredients")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("⏪ Undo", use_container_width=True):
+            if st.session_state.cake_layers:
+                st.session_state.cake_layers.pop()
+                st.rerun()
+    with col2:
+        if st.button("🗑️ Reset", use_container_width=True):
+            st.session_state.cake_layers = []
+            st.rerun()
+    with col3:
+        if st.button("Next ➡️", type="primary", use_container_width=True):
+            # Added Confetti burst here as requested
+            st.balloons() 
+            st.session_state.page = "final"
+            time.sleep(1)
+            st.rerun()
+
+    tabs = st.tabs(["Sponges", "Frosting Drips"])
+    
+    with tabs[0]:
+        st.markdown("<p class='tiny-text'>*Please click twice to select</p>", unsafe_allow_html=True)
+        cols = st.columns(3)
+        if cols[0].button("Vanilla"): st.session_state.cake_layers.append("vanilla_base.png")
+        if cols[1].button("Chocolate"): st.session_state.cake_layers.append("chocolate_base.png")
