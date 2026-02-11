@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import time
 
 # # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
@@ -10,7 +11,7 @@ st.markdown("""
     .cake-container {
         position: relative;
         width: 100%;
-        max-width: 500px;
+        max-width: 400px;
         aspect-ratio: 1 / 1;
         margin: auto;
         background-color: #1a1a1a;
@@ -32,6 +33,7 @@ st.markdown("""
         background: linear-gradient(to bottom, #ffee58, #fbc02d);
         border-radius: 2px;
         z-index: 100;
+        transition: opacity 1.5s ease-out, transform 1.5s ease-out;
     }
     .flame {
         position: absolute;
@@ -45,13 +47,25 @@ st.markdown("""
         box-shadow: 0 0 8px #ff9800;
         animation: flicker 0.1s infinite alternate;
     }
+    /* Effect for blowing out */
+    .blown-out {
+        opacity: 0;
+        transform: translateY(-10px) rotate(5deg);
+    }
     @keyframes flicker {
         from { transform: translateX(-50%) scale(1); }
         to { transform: translateX(-50%) scale(1.1) rotate(2deg); }
     }
+    .tiny-text {
+        font-size: 10px;
+        color: #888;
+        margin-top: -10px;
+        margin-bottom: 10px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
+# State initialization
 if 'cake_layers' not in st.session_state:
     st.session_state.cake_layers = []
 if 'page' not in st.session_state:
@@ -71,21 +85,27 @@ if st.session_state.page == "intro":
 elif st.session_state.page == "build":
     st.title("Akshata's Cake Studio 🧁")
     
-    st.subheader("🎂 Your Creation")
-    if not st.session_state.cake_layers:
-        st.info("Your cake stand is empty! Pick a base to start.")
-    else:
-        html_code = '<div class="cake-container">'
-        for layer in st.session_state.cake_layers:
-            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
-        html_code += '</div>'
-        st.markdown(html_code, unsafe_allow_html=True)
-    
-    st.write("---")
+    # MOBILE FIX: Controls at the top so they don't disappear
+    st.write("### 🥣 Ingredients")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("⏪ Undo", use_container_width=True):
+            if st.session_state.cake_layers:
+                st.session_state.cake_layers.pop()
+                st.rerun()
+    with col2:
+        if st.button("🗑️ Reset", use_container_width=True):
+            st.session_state.cake_layers = []
+            st.rerun()
+    with col3:
+        if st.button("Next ➡️", type="primary", use_container_width=True):
+            st.session_state.page = "final"
+            st.rerun()
+
     tabs = st.tabs(["Sponges", "Frosting Drips"])
     
     with tabs[0]:
-        st.write("Choose your bases:")
+        st.markdown("<p class='tiny-text'>*Please click twice to select</p>", unsafe_allow_html=True)
         cols = st.columns(3)
         if cols[0].button("Vanilla"): st.session_state.cake_layers.append("vanilla_base.png")
         if cols[1].button("Chocolate"): st.session_state.cake_layers.append("chocolate_base.png")
@@ -95,7 +115,7 @@ elif st.session_state.page == "build":
         if cols[2].button("Karela 🥒"): st.session_state.cake_layers.append("karela_base.png")
         
     with tabs[1]:
-        st.write("Add some drips:")
+        st.markdown("<p class='tiny-text'>*Please click twice to select</p>", unsafe_allow_html=True)
         dcols = st.columns(3)
         if dcols[0].button("Vanilla Drip"): st.session_state.cake_layers.append("vanilla_drip.png")
         if dcols[1].button("Chocolate Drip"): st.session_state.cake_layers.append("chocolate_drip.png")
@@ -103,56 +123,77 @@ elif st.session_state.page == "build":
         if dcols[0].button("Blueberry Drip"): st.session_state.cake_layers.append("blueberry_drip.png")
         if dcols[1].button("Mango Drip"): st.session_state.cake_layers.append("mango_drip.png")
 
-    st.write("---")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("⏪ Undo", use_container_width=True):
-            if st.session_state.cake_layers:
-                st.session_state.cake_layers.pop()
-                st.rerun()
-    with col2:
-        if st.button("🗑️ Start Over", use_container_width=True):
-            st.session_state.cake_layers = []
-            st.rerun()
-    with col3:
-        if st.button("✅ READY!", type="primary", use_container_width=True):
-            st.session_state.page = "final"
-            st.rerun()
+    st.subheader("🎂 Your Creation")
+    if not st.session_state.cake_layers:
+        st.info("Cake stand empty!")
+    else:
+        html_code = '<div class="cake-container">'
+        for layer in st.session_state.cake_layers:
+            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+        html_code += '</div>'
+        st.markdown(html_code, unsafe_allow_html=True)
 
-# # Stage 3: The Wish & The Blow
+# # Stage 3: The Wish & Blow
 elif st.session_state.page == "final":
     st.title("Make a wish! 🎂✨")
     age = st.number_input("Enter your age:", min_value=1, max_value=100, step=1, value=1)
     
-    # Text input for the secret wish
-    wish = st.text_input("Type your birthday wish here (it stays a secret!):")
-
+    # Display Cake with Candles BEFORE the wish input as requested
     html_code = '<div class="cake-container">'
     for layer in st.session_state.cake_layers:
         html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
     
-    if not st.session_state.blown:
-        random.seed(42) 
-        for _ in range(age):
-            left_pos = random.randint(35, 62) 
-            top_pos = random.randint(35, 50)
-            html_code += f'<div class="css-candle" style="left: {left_pos}%; top: {top_pos}%;"><div class="flame"></div></div>'
+    random.seed(42) 
+    for _ in range(age):
+        left_pos = random.randint(35, 62) 
+        top_pos = random.randint(35, 50)
+        candle_class = "css-candle blown-out" if st.session_state.blown else "css-candle"
+        flame_html = '<div class="flame"></div>' if not st.session_state.blown else ''
+        html_code += f'<div class="{candle_class}" style="left: {left_pos}%; top: {top_pos}%;">{flame_html}</div>'
     
     html_code += '</div>'
     st.markdown(html_code, unsafe_allow_html=True)
 
     st.write("---")
+    wish = st.text_input("Make a wish, it stays secret thingy:")
     
     if not st.session_state.blown:
         st.subheader("Now blow the candles!")
-        if st.button("💨 BLOW!", use_container_width=True):
+        if st.button("Click to Blow the candles", use_container_width=True):
             st.session_state.blown = True
+            st.snow() # Enchanting effect
+            time.sleep(1)
             st.rerun()
     else:
-        st.balloons()
-        st.success(f"🎂 HAPPY BIRTHDAY, AKSHATA! 🎂")
-        st.markdown("### Now let's move on to the gifts...")
-        if st.button("CONTINUE 🎁", type="primary", use_container_width=True):
-            # This is where you would link to your next page or a surprise gift reveal
-            st.write("Redirecting to gifts...") 
-            # st.session_state.page = "gifts" # (Unlock this if you want a gift stage!)
+        st.success("Wishes are on their way! ✨")
+        if st.button("Next 🎁", use_container_width=True):
+            st.session_state.page = "surprise"
+            st.rerun()
+
+# # Stage 4: Surprise Message
+elif st.session_state.page == "surprise":
+    st.balloons()
+    st.title("We have something for you... 💖")
+    st.image("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzE1YmwycTVwazBocm5udDZidzdybGloN2VvMG9pYmlrcTl0cGhodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WRL7YgP42OKns22wRD/giphy.gif")
+    
+    if st.button("The one where we surprise you", type="primary", use_container_width=True):
+        st.session_state.page = "video"
+        st.rerun()
+
+# # Stage 5: Final Video
+elif st.session_state.page == "video":
+    st.title("Happy Birthday Akshata! 🎬")
+    
+    try:
+        video_file = open('akbday.mp4', 'rb')
+        video_bytes = video_file.read()
+        # Full controls and fullscreen are enabled by default in st.video
+        st.video(video_bytes)
+    except:
+        st.error("Make sure akbday.mp4 is uploaded to GitHub!")
+
+    if st.button("Start Over? 🔄"):
+        st.session_state.cake_layers = []
+        st.session_state.blown = False
+        st.session_state.page = "intro"
+        st.rerun()
