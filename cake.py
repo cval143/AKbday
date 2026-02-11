@@ -2,12 +2,10 @@ import streamlit as st
 import random
 import time
 
-# Stage 0: Setup
-# Fixed Line 9: Added standard quotes and ensured no invisible characters
+# # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
-# RESPONSIVE CSS + New Satirical Styling
-# Fixed Line 14: Used triple quotes (""") to properly wrap the multi-line CSS block
+# RESPONSIVE CSS + Satirical Styling
 st.markdown("""
     <style>
     .cake-container {
@@ -87,7 +85,7 @@ if 'blown' not in st.session_state:
 # # Stage 1: Intro
 if st.session_state.page == "intro":
     st.title("It's our bestie's birthday! 🎉")
-    st.image("https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGRmNXIyNmQ5TQzOHdheTk1M2w0aHRtZXdnemkzaDZyMjZqajZrdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/n3KZaXLYLuyNSHEvbm/giphy.gif")
+    st.image("https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGRmNXIyNmQ5bTQzOHdheTk1M2w0aHRtZXdnemkzaDZyMjZqajZrdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/n3KZaXLYLuyNSHEvbm/giphy.gif")
     if st.button("Let's Bake a Cake! 👩‍🍳", use_container_width=True):
         st.session_state.page = "build"
         st.rerun()
@@ -109,10 +107,7 @@ elif st.session_state.page == "build":
             st.rerun()
     with col3:
         if st.button("Next ➡️", type="primary", use_container_width=True):
-            # Added Confetti burst here as requested
-            st.balloons() 
             st.session_state.page = "final"
-            time.sleep(1)
             st.rerun()
 
     tabs = st.tabs(["Sponges", "Frosting Drips"])
@@ -122,3 +117,101 @@ elif st.session_state.page == "build":
         cols = st.columns(3)
         if cols[0].button("Vanilla"): st.session_state.cake_layers.append("vanilla_base.png")
         if cols[1].button("Chocolate"): st.session_state.cake_layers.append("chocolate_base.png")
+        if cols[2].button("Strawberry"): st.session_state.cake_layers.append("strawberry_base.png")
+        if cols[0].button("Red Velvet"): st.session_state.cake_layers.append("redvelvet_base.png")
+        if cols[1].button("Butterscotch"): st.session_state.cake_layers.append("butterscotch_base.png")
+        if cols[2].button("Karela 🥒"): st.session_state.cake_layers.append("karela_base.png")
+        
+    with tabs[1]:
+        st.markdown("<p class='tiny-text'>*Please click twice to select</p>", unsafe_allow_html=True)
+        dcols = st.columns(3)
+        if dcols[0].button("Vanilla Drip"): st.session_state.cake_layers.append("vanilla_drip.png")
+        if dcols[1].button("Chocolate Drip"): st.session_state.cake_layers.append("chocolate_drip.png")
+        if dcols[2].button("Strawberry Drip"): st.session_state.cake_layers.append("strawberry_drip.png")
+        if dcols[0].button("Blueberry Drip"): st.session_state.cake_layers.append("blueberry_drip.png")
+        if dcols[1].button("Mango Drip"): st.session_state.cake_layers.append("mango_drip.png")
+
+    st.subheader("🎂 Your Creation")
+    if not st.session_state.cake_layers:
+        st.info("Cake stand empty!")
+    else:
+        html_code = '<div class="cake-container">'
+        for layer in st.session_state.cake_layers:
+            html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+        html_code += '</div>'
+        st.markdown(html_code, unsafe_allow_html=True)
+
+# # Stage 3: Satirical Final Page
+elif st.session_state.page == "final":
+    st.title("Pls do not try eating this cake but gorgeous creation 🎂")
+    age = st.number_input("Enter your age:", min_value=1, max_value=100, step=1, value=1)
+    
+    html_code = '<div class="cake-container">'
+    for layer in st.session_state.cake_layers:
+        html_code += f'<img src="https://raw.githubusercontent.com/cval143/AKbday/main/{layer}" class="cake-layer">'
+    
+    random.seed(42) 
+    for _ in range(age):
+        left_pos = random.randint(35, 62) 
+        top_pos = random.randint(35, 50)
+        candle_class = "css-candle blown-out" if st.session_state.blown else "css-candle"
+        flame_html = '<div class="flame"></div>' if not st.session_state.blown else ''
+        html_code += f'<div class="{candle_class}" style="left: {left_pos}%; top: {top_pos}%;">{flame_html}</div>'
+    
+    html_code += '</div>'
+    st.markdown(html_code, unsafe_allow_html=True)
+
+    st.write("---")
+    wish = st.text_input("Make a wish (it stays a secret!):")
+    
+    if not st.session_state.blown:
+        st.subheader("Now blow the candles!")
+        if st.button("Click to Blow the candles", use_container_width=True):
+            st.session_state.blown = True
+            # Fireworks/Firecracker Effect via JavaScript
+            st.components.v1.html("""
+                <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+                <script>
+                    var duration = 5 * 1000;
+                    var animationEnd = Date.now() + duration;
+                    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                    function randomInRange(min, max) {
+                      return Math.random() * (max - min) + min;
+                    }
+
+                    var interval = setInterval(function() {
+                      var timeLeft = animationEnd - Date.now();
+                      if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                      }
+                      var particleCount = 50 * (timeLeft / duration);
+                      // Fireworks burst locations
+                      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                    }, 250);
+                </script>
+            """, height=0)
+            time.sleep(2)
+            st.rerun()
+    else:
+        st.success("Tathastu, Girl😙💖")
+        if st.button("click here 🎁", type="primary", use_container_width=True):
+            st.session_state.page = "surprise"
+            st.rerun()
+
+# # Stage 4: Surprise
+elif st.session_state.page == "surprise":
+    st.title("We have something for you... 💖")
+    st.image("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzE1YmwycTVwazBocm5udDZidzdybGloN2VvMG9pYmlrcTl0cGhodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WRL7YgP42OKns22wRD/giphy.gif")
+    
+    st.write("---")
+    drive_link = "https://drive.google.com/file/d/1YCfcnWZX3a-xk3YPrnvEFldXzXBcjc7p/view?usp=sharing"
+    st.markdown(f'<a href="{drive_link}" target="_blank" class="gift-button">The one where we surprise you 📽️</a>', unsafe_allow_html=True)
+    
+    st.write("")
+    if st.button("Bake another cake? 🔄", use_container_width=True):
+        st.session_state.cake_layers = []
+        st.session_state.blown = False
+        st.session_state.page = "intro"
+        st.rerun()
