@@ -109,7 +109,7 @@ elif st.session_state.page == "build":
         if st.button("Next ➡️", type="primary", use_container_width=True):
             st.session_state.page = "final"
             st.rerun()
-    st.markdown("<p class='tiny-text'>*Scroll down to see your creation</p>", unsafe_allow_html=True)
+    st.markdown("<p class='tiny-text'>Scroll down to see your creation</p>", unsafe_allow_html=True)
     
     tabs = st.tabs(["Sponges", "Frosting Drips"])
     
@@ -144,7 +144,7 @@ elif st.session_state.page == "build":
 
 # # Stage 3: Satirical Final Page
 elif st.session_state.page == "final":
-    st.title("Beautiful!😍 (Just like the Birthday Girl🌚")
+    st.title("Beautiful!😍 (Just like the Birthday Girl🌚)")
     age = st.number_input("Enter your age:", min_value=1, max_value=100, step=1, value=1)
     
     html_code = '<div class="cake-container">'
