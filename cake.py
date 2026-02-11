@@ -5,7 +5,7 @@ import time
 # # Stage 0: Setup
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
-# RESPONSIVE CSS
+# RESPONSIVE CSS + New Satirical Styling
 st.markdown("""
     <style>
     .cake-container {
@@ -28,12 +28,12 @@ st.markdown("""
     }
     .css-candle {
         position: absolute;
-        width: 2%;
-        height: 10%;
+        width: 2.5%;
+        height: 12%;
         background: linear-gradient(to bottom, #ffee58, #fbc02d);
         border-radius: 2px;
         z-index: 100;
-        transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+        transition: opacity 1.2s ease-out;
     }
     .flame {
         position: absolute;
@@ -44,16 +44,15 @@ st.markdown("""
         height: 50%;
         background: radial-gradient(circle, #ffeb3b, #ff9800, #f44336);
         border-radius: 50% 50% 20% 20%;
-        box-shadow: 0 0 8px #ff9800;
+        box-shadow: 0 0 10px #ff9800;
         animation: flicker 0.1s infinite alternate;
     }
     .blown-out {
         opacity: 0;
-        transform: translateY(-10px) rotate(5deg);
     }
     @keyframes flicker {
         from { transform: translateX(-50%) scale(1); }
-        to { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+        to { transform: translateX(-50%) scale(1.1) rotate(1deg); }
     }
     .tiny-text {
         font-size: 10px;
@@ -61,10 +60,9 @@ st.markdown("""
         margin-top: -10px;
         margin-bottom: 10px;
     }
-    /* Style for the final gift link button */
     .gift-button {
         display: inline-block;
-        padding: 0.5em 1em;
+        padding: 0.6em 1.2em;
         color: white;
         background-color: #ff4b4b;
         border-radius: 10px;
@@ -72,6 +70,7 @@ st.markdown("""
         font-weight: bold;
         text-align: center;
         width: 100%;
+        border: 2px solid #ff4b4b;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -142,9 +141,9 @@ elif st.session_state.page == "build":
         html_code += '</div>'
         st.markdown(html_code, unsafe_allow_html=True)
 
-# # Stage 3: The Wish & Blow
+# # Stage 3: Satirical Final Page
 elif st.session_state.page == "final":
-    st.title("Make a wish! 🎂✨")
+    st.title("Pls do not try eating this cake but gorgeous creation 🎂")
     age = st.number_input("Enter your age:", min_value=1, max_value=100, step=1, value=1)
     
     html_code = '<div class="cake-container">'
@@ -163,29 +162,27 @@ elif st.session_state.page == "final":
     st.markdown(html_code, unsafe_allow_html=True)
 
     st.write("---")
-    wish = st.text_input("Make a wish, it stays secret thingy:")
+    wish = st.text_input("Make a wish (it stays a secret!):")
     
     if not st.session_state.blown:
         st.subheader("Now blow the candles!")
         if st.button("Click to Blow the candles", use_container_width=True):
             st.session_state.blown = True
-            st.snow()
+            st.balloons() # This triggers the burst of balloons/confetti
             time.sleep(1)
             st.rerun()
     else:
         st.success("Wishes are on their way! ✨")
-        if st.button("Next 🎁", use_container_width=True):
+        if st.button("Next 🎁", type="primary", use_container_width=True):
             st.session_state.page = "surprise"
             st.rerun()
 
-# # Stage 4: Surprise Gift Link
+# # Stage 4: Surprise
 elif st.session_state.page == "surprise":
-    st.balloons()
     st.title("We have something for you... 💖")
     st.image("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzE1YmwycTVwazBocm5udDZidzdybGloN2VvMG9pYmlrcTl0cGhodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WRL7YgP42OKns22wRD/giphy.gif")
     
     st.write("---")
-    # Using a specialized HTML link button for the Drive Video
     drive_link = "https://drive.google.com/file/d/1YCfcnWZX3a-xk3YPrnvEFldXzXBcjc7p/view?usp=sharing"
     st.markdown(f'<a href="{drive_link}" target="_blank" class="gift-button">The one where we surprise you 📽️</a>', unsafe_allow_html=True)
     
