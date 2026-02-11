@@ -6,7 +6,7 @@ import time
 st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
 
 # RESPONSIVE CSS + New Satirical Styling
-st.markdown("""
+st.markdown(""
     <style>
     .cake-container {
         position: relative;
