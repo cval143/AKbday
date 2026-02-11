@@ -3,7 +3,7 @@ import random
 import time
 
 # # Stage 0: Setup
-st.set_page_config(page_title="AK's Birthday Bakery 🎂", page_icon="🍰")
+st.set_page_config(page_title="Akshata's Cake Studio 🎂", page_icon="🍰")
 
 # RESPONSIVE CSS + Satirical Styling
 st.markdown("""
@@ -109,7 +109,8 @@ elif st.session_state.page == "build":
         if st.button("Next ➡️", type="primary", use_container_width=True):
             st.session_state.page = "final"
             st.rerun()
-
+    st.markdown("<p class='tiny-text'>*Scroll down to see your creation</p>", unsafe_allow_html=True)
+    
     tabs = st.tabs(["Sponges", "Frosting Drips"])
     
     with tabs[0]:
